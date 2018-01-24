@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+basedir=`pwd`
+cd $1/skeleton
+echo Compiling...
+javac *.java
+tmp=`ls *.java`
+class=${tmp%.*}
+for i in ../input/*.in; do
+  filename=$(basename $i)
+  echo Running test case ${filename%.*}.in
+  java $class < $i > /tmp/${filename%.*}.out
+done
+set +e
+cd ../output
+for i in *.out; do
+  echo Testing $i
+  dos2unix -o $i >/dev/null 2>&1
+  diff -s $i /tmp/$i
+done
